@@ -9,18 +9,21 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/run", (req, res) => {
-    const code = req.body.code;
+    const { code, filename } = req.body;
 
-    if (!code) {
-        return res.status(400).json({ error: "No code provided" });
+    if (!code || !filename) {
+        return res.status(400).json({ error: "Code or filename missing" });
     }
 
-    const filename = "program.c";
-    const outputBinary = "program.out";
+    // 🔐 Sanitize filename (VERY IMPORTANT)
+    const safeName = filename.replace(/[^a-zA-Z0-9_-]/g, "");
 
-    fs.writeFileSync(filename, code);
+    const sourceFile = `${safeName}.c`;
+    const outputBinary = `${safeName}.out`;
 
-    exec(`clang ${filename} -o ${outputBinary}`, (compileErr, stdout, stderr) => {
+    fs.writeFileSync(sourceFile, code);
+
+    exec(`clang ${sourceFile} -o ${outputBinary}`, (compileErr, stdout, stderr) => {
         if (compileErr) {
             return res.json({ error: stderr });
         }
@@ -34,6 +37,7 @@ app.post("/run", (req, res) => {
         });
     });
 });
+
 
 app.listen(3000, () => {
     console.log("Server running on http://localhost:3000");
