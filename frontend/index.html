@@ -78,32 +78,22 @@ int main() {
 <script>
 function runCode() {
     const code = document.getElementById("code").value;
-    const outputBox = document.getElementById("output");
-
-    outputBox.textContent = "Running...";
-    outputBox.classList.remove("error");
+    const filename = prompt("Enter file name (without .c):");
 
     fetch("http://localhost:3000/run", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code, filename })
     })
     .then(res => res.json())
     .then(data => {
-        if (data.output) {
-            outputBox.textContent = data.output;
-        } else {
-            outputBox.textContent = data.error;
-            outputBox.classList.add("error");
-        }
-    })
-    .catch(err => {
-        outputBox.textContent = "Server Error";
-        outputBox.classList.add("error");
+        document.getElementById("output").textContent =
+            data.output || data.error;
     });
 }
+
 </script>
 
 </body>
