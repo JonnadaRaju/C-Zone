@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online C Compiler</title>
+</head>
+<body>
+
+<h2>Online C Compiler</h2>
+
+<textarea id="code" rows="15" cols="60">
+#include <stdio.h>
+
+int main() {
+    printf("Hello, Raju!");
+    return 0;
+}
+</textarea>
+
+<br><br>
+<button onclick="runCode()">Run</button>
+
+<h3>Output:</h3>
+<pre id="output"></pre>
+
+<script>
+function runCode() {
+    const code = document.getElementById("code").value;
+
+    fetch("http://localhost:3000/run", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("output").textContent =
+            data.output || data.error;
+    });
+}
+</script>
+
+</body>
+</html>
